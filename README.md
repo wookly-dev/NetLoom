@@ -20,6 +20,10 @@ dotnet publish src/NetLoom.App/NetLoom.App.csproj -c Release -r win-x64 --self-c
 빌드 도우미 `build_release.bat`도 사용할 수 있습니다. SDK가 없으면 Microsoft의 설치 스크립트로
 사용자 캐시에 SDK를 받습니다. 배포 결과는 `publish/NetLoom.exe`입니다. 앱은 관리자 권한을 요청합니다.
 
+`SOURCE_MANIFEST.sha256`는 Git에 저장된 원본 바이트의 체크섬입니다. GitHub ZIP과 Windows
+체크아웃은 `.bat` 파일을 CRLF로 변환할 수 있습니다. 체크섬을 비교할 때는 `git cat-file blob HEAD:파일경로`
+출력이나 `.bat`의 줄바꿈을 LF로 정규화한 바이트를 사용하세요.
+
 ## 합성 회귀 검사
 
 ```powershell
