@@ -1,0 +1,35 @@
+name: 오류 제보 / Bug report
+description: 합성 예제로 재현 가능한 오류를 알려주세요.
+title: "[Bug] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        공개 이슈입니다. 실제 패킷·인증정보·개인 이름·사용자 폴더 경로·내부 장비명·고객 자료를 첨부하지 마세요.
+        취약점은 저장소 Security의 비공개 제보 기능을 이용해 주세요.
+  - type: input
+    id: version
+    attributes:
+      label: NetLoom 버전
+      placeholder: 0.7.5
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Windows 버전
+      description: 개인 PC 이름이나 사용자 이름은 적지 마세요.
+      placeholder: Windows 11 x64
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: 재현 순서
+      description: 실제 네트워크 정보 대신 합성 값으로 설명해 주세요.
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: 예상 결과와 실제 결과
+    validations:
+      required: true
