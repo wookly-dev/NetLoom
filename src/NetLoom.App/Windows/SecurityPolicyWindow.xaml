@@ -1,0 +1,121 @@
+<Window x:Class="NetLoom.App.Windows.SecurityPolicyWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+        Title="NetLoom · 보안 감사 정책" Width="980" Height="760" MinWidth="860" MinHeight="650"
+        WindowStartupLocation="CenterOwner" WindowStyle="None" ResizeMode="CanResize"
+        Background="#111111" UseLayoutRounding="True" SnapsToDevicePixels="True" FontFamily="Segoe UI">
+    <shell:WindowChrome.WindowChrome>
+        <shell:WindowChrome CaptionHeight="0" CornerRadius="0" GlassFrameThickness="0" ResizeBorderThickness="5" UseAeroCaptionButtons="False"/>
+    </shell:WindowChrome.WindowChrome>
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Foreground" Value="#F2F2F2"/><Setter Property="Background" Value="#1B1B1B"/>
+            <Setter Property="BorderBrush" Value="#3A3A3A"/><Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="11,7"/><Setter Property="Margin" Value="0,0,7,0"/><Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style x:Key="AccentButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Foreground" Value="#171717"/><Setter Property="Background" Value="#FAD83B"/>
+            <Setter Property="BorderBrush" Value="#FAD83B"/><Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="Foreground" Value="#F2F2F2"/><Setter Property="Background" Value="#151515"/>
+            <Setter Property="BorderBrush" Value="#3A3A3A"/><Setter Property="Padding" Value="8,6"/><Setter Property="CaretBrush" Value="#FAD83B"/>
+        </Style>
+        <Style x:Key="PolicyLabel" TargetType="TextBlock"><Setter Property="Foreground" Value="#D0D0D0"/><Setter Property="FontWeight" Value="SemiBold"/><Setter Property="Margin" Value="0,0,0,5"/></Style>
+        <Style x:Key="PolicyHint" TargetType="TextBlock"><Setter Property="Foreground" Value="#777"/><Setter Property="FontSize" Value="10"/><Setter Property="TextWrapping" Value="Wrap"/><Setter Property="Margin" Value="0,4,0,0"/></Style>
+    </Window.Resources>
+
+    <Border BorderBrush="#0A0A0A" BorderThickness="1" Background="#111111">
+        <Grid>
+            <Grid.RowDefinitions><RowDefinition Height="36"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+            <Grid Grid.Row="0" Background="#080808" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="44"/></Grid.ColumnDefinitions>
+                <TextBlock Text="보안 감사 정책 · Allowlist / DNS / Offline Intelligence" Foreground="White" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" Margin="14,0,0,0"/>
+                <Button Grid.Column="1" Style="{StaticResource WindowCloseButton}" Click="Close_Click"><Viewbox Width="10" Height="10"><Canvas Width="10" Height="10"><Line X1="1" Y1="1" X2="9" Y2="9" Stroke="#E8E8E8" StrokeThickness="1.15"/><Line X1="9" Y1="1" X2="1" Y2="9" Stroke="#E8E8E8" StrokeThickness="1.15"/></Canvas></Viewbox></Button>
+            </Grid>
+
+            <Grid Grid.Row="1" Margin="14">
+                <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+                <Border Grid.Row="0" Background="#151515" BorderBrush="#333" BorderThickness="1" CornerRadius="5" Padding="10" Margin="0,0,0,10">
+                    <StackPanel>
+                        <TextBlock Text="정상 업무 통신을 정책으로 제외해 Fan-out/Beacon/주의 포트 등의 오탐을 줄입니다. 정책은 이 PC에만 로컬 저장됩니다." Foreground="#C8C8C8" TextWrapping="Wrap"/>
+                        <TextBlock x:Name="PolicyPathText" Foreground="#777" FontSize="10" Margin="0,5,0,0" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
+
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <Grid Margin="0,0,6,0">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="12"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="12"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+
+                        <StackPanel Grid.Row="0" Grid.Column="0">
+                            <TextBlock Style="{StaticResource PolicyLabel}" Text="신뢰 내부 IP / CIDR"/>
+                            <TextBox x:Name="TrustedInternalBox" Height="120" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+                            <TextBlock Style="{StaticResource PolicyHint}" Text="예: 192.168.0.10 또는 192.168.10.0/24 · 승인된 스캐너/관리 서버의 내부 Sweep/횡적 이동 점수만 제외"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="2">
+                            <TextBlock Style="{StaticResource PolicyLabel}" Text="허용 외부 IP / CIDR"/>
+                            <TextBox x:Name="AllowedExternalBox" Height="120" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+                            <TextBlock Style="{StaticResource PolicyHint}" Text="업무상 상시 사용하는 외부 목적지. CIDR 허용 시 범위가 넓어질 수 있으므로 필요한 최소 범위를 권장"/>
+                        </StackPanel>
+
+                        <Grid Grid.Row="2" Grid.Column="0">
+                            <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="12"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+                            <StackPanel>
+                                <TextBlock Style="{StaticResource PolicyLabel}" Text="허용 도메인"/>
+                                <TextBox x:Name="AllowedDomainsBox" Height="110" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+                                <TextBlock Style="{StaticResource PolicyHint}" Text="예: microsoft.com · 하위 도메인도 일치. DNS 이상 분석에서도 정상 도메인으로 제외"/>
+                            </StackPanel>
+                            <StackPanel Grid.Row="2">
+                                <TextBlock Style="{StaticResource PolicyLabel}" Text="허용 서비스 그룹 / 외부 포트"/>
+                                <TextBox x:Name="AllowedServiceGroupsBox" Height="82" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+                                <TextBlock Text="외부 허용 포트 (쉼표 구분)" Foreground="#AFAFAF" FontSize="10.5" Margin="0,7,0,4"/>
+                                <TextBox x:Name="AllowedPortsBox" Height="32" VerticalContentAlignment="Center"/>
+                                <TextBlock Style="{StaticResource PolicyHint}" Text="서비스 그룹 예: Microsoft, Google, AWS, Cloudflare. 포트 허용은 모든 외부 목적지에 적용되므로 신중히 사용"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <StackPanel Grid.Row="2" Grid.Column="2">
+                            <TextBlock Style="{StaticResource PolicyLabel}" Text="DNS 이상 탐지 임계값 (최근 5분)"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="100"/></Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions><RowDefinition Height="38"/><RowDefinition Height="38"/><RowDefinition Height="38"/><RowDefinition Height="38"/></Grid.RowDefinitions>
+                                <TextBlock Text="최소 DNS 질의/응답 수" Foreground="#BDBDBD" VerticalAlignment="Center"/><TextBox x:Name="DnsMinQueriesBox" Grid.Column="1" Margin="0,3" VerticalContentAlignment="Center"/>
+                                <TextBlock Grid.Row="1" Text="NXDOMAIN 비율 (%)" Foreground="#BDBDBD" VerticalAlignment="Center"/><TextBox x:Name="DnsNxRatioBox" Grid.Row="1" Grid.Column="1" Margin="0,3" VerticalContentAlignment="Center"/>
+                                <TextBlock Grid.Row="2" Text="긴 질의명 기준 길이" Foreground="#BDBDBD" VerticalAlignment="Center"/><TextBox x:Name="DnsLongLengthBox" Grid.Row="2" Grid.Column="1" Margin="0,3" VerticalContentAlignment="Center"/>
+                                <TextBlock Grid.Row="3" Text="긴 질의 최소 건수" Foreground="#BDBDBD" VerticalAlignment="Center"/><TextBox x:Name="DnsLongCountBox" Grid.Row="3" Grid.Column="1" Margin="0,3" VerticalContentAlignment="Center"/>
+                            </Grid>
+                            <TextBlock Style="{StaticResource PolicyHint}" Text="DGA/오타/광고 추적/DNS 터널링 등은 모두 후보가 될 수 있습니다. 이 기능은 탐지 신호이며 악성 판정이 아닙니다."/>
+                        </StackPanel>
+                    </Grid>
+                </ScrollViewer>
+
+                <Border Grid.Row="2" Background="#151515" BorderBrush="#333" BorderThickness="1" CornerRadius="5" Padding="10" Margin="0,10,0,10">
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="Offline External Intelligence" Foreground="#D0D0D0" FontWeight="SemiBold"/>
+                            <TextBlock x:Name="IntelPathText" Foreground="#777" FontSize="10" Margin="0,4,0,0" TextWrapping="Wrap"/>
+                            <TextBlock x:Name="IntelStatusText" Foreground="#FAD83B" FontSize="10.5" Margin="0,3,0,0"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                            <Button Content="CSV 템플릿/열기" Click="OpenIntel_Click"/>
+                            <Button Content="CSV 다시 읽기" Click="ReloadIntel_Click" Margin="0"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <Grid Grid.Row="3">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                    <TextBlock x:Name="StatusText" Foreground="#8E8E8E" VerticalAlignment="Center"/>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <Button Content="저장값 다시 읽기" Click="ReloadPolicy_Click"/>
+                        <Button Content="닫기" Click="Close_Click"/>
+                        <Button Content="저장/적용" Style="{StaticResource AccentButton}" Click="Save_Click" Margin="0"/>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

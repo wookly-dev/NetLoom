@@ -1,0 +1,1016 @@
+﻿<Window x:Class="NetLoom.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+        xmlns:controls="clr-namespace:NetLoom.App.Controls"
+        Title="NetLoom"
+        Icon="Assets/AppIcon.ico"
+        Width="1680" Height="900"
+        MinWidth="1380" MinHeight="730"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        ResizeMode="CanResize"
+        Background="#111111"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True"
+        FontFamily="Segoe UI">
+
+    <shell:WindowChrome.WindowChrome>
+        <shell:WindowChrome CaptionHeight="0"
+                            CornerRadius="0"
+                            GlassFrameThickness="0"
+                            ResizeBorderThickness="6"
+                            UseAeroCaptionButtons="False"/>
+    </shell:WindowChrome.WindowChrome>
+
+    <Window.Resources>
+        <SolidColorBrush x:Key="Bg" Color="#111111"/>
+        <SolidColorBrush x:Key="Panel" Color="#181818"/>
+        <SolidColorBrush x:Key="Panel2" Color="#1D1D1D"/>
+        <SolidColorBrush x:Key="Line" Color="#313131"/>
+        <SolidColorBrush x:Key="Text" Color="#F2F2F2"/>
+        <SolidColorBrush x:Key="Muted" Color="#A7A7A7"/>
+        <SolidColorBrush x:Key="Accent" Color="#FAD83B"/>
+        <SolidColorBrush x:Key="Success" Color="#62D9A6"/>
+        <SolidColorBrush x:Key="Danger" Color="#FF6A6A"/>
+
+        <Style TargetType="Button" x:Key="ToolbarButton">
+            <Setter Property="Foreground" Value="{StaticResource Text}"/>
+            <Setter Property="Background" Value="#1B1B1B"/>
+            <Setter Property="BorderBrush" Value="#3A3A3A"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="12,7"/>
+            <Setter Property="Margin" Value="0,0,7,0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#252525"/>
+                    <Setter Property="BorderBrush" Value="#505050"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.45"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="Button" x:Key="AccentButton" BasedOn="{StaticResource ToolbarButton}">
+            <Setter Property="Foreground" Value="#181818"/>
+            <Setter Property="Background" Value="{StaticResource Accent}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FFE15C"/>
+                    <Setter Property="BorderBrush" Value="#FFE15C"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Main toolbar buttons can wrap to a second line at smaller window widths.  Give every
+             wrapped item a bottom gap so line 2 never touches line 1.  Keep the general toolbar
+             style unchanged because it is reused by compact controls throughout the UI. -->
+        <Style TargetType="Button" x:Key="TopToolbarButton" BasedOn="{StaticResource ToolbarButton}">
+            <Setter Property="Margin" Value="0,0,7,7"/>
+        </Style>
+        <Style TargetType="Button" x:Key="TopAccentButton" BasedOn="{StaticResource AccentButton}">
+            <Setter Property="Margin" Value="0,0,7,7"/>
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="Foreground" Value="{StaticResource Text}"/>
+            <Setter Property="Background" Value="#151515"/>
+            <Setter Property="BorderBrush" Value="#3A3A3A"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="9,7"/>
+            <Setter Property="CaretBrush" Value="{StaticResource Accent}"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+
+        <Style TargetType="ComboBox">
+            <Setter Property="Foreground" Value="{StaticResource Text}"/>
+            <Setter Property="Background" Value="#151515"/>
+            <Setter Property="BorderBrush" Value="#3A3A3A"/>
+            <Setter Property="Padding" Value="8,5"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+
+        <Style TargetType="ComboBoxItem">
+            <Setter Property="Foreground" Value="#EAEAEA"/>
+            <Setter Property="Background" Value="#181818"/>
+            <Setter Property="Padding" Value="8,7"/>
+            <Setter Property="MinHeight" Value="32"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Style.Triggers>
+                <Trigger Property="IsHighlighted" Value="True">
+                    <Setter Property="Background" Value="#292929"/>
+                    <Setter Property="Foreground" Value="#FFFFFF"/>
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#3A3520"/>
+                    <Setter Property="Foreground" Value="#FFFFFF"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Native Windows ComboBox can ignore dark Background in the closed state.
+             This template paints both the selected value and popup explicitly. -->
+        <Style x:Key="DarkComboBox" TargetType="ComboBox">
+            <Setter Property="Height" Value="34"/>
+            <Setter Property="MinHeight" Value="34"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="#F2F2F2"/>
+            <Setter Property="Background" Value="#151515"/>
+            <Setter Property="BorderBrush" Value="#3A3A3A"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="9,6"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <Border x:Name="ComboBorder" Background="#151515" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="4">
+                                <Grid>
+                                    <ContentPresenter Margin="10,0,34,0" VerticalAlignment="Center" HorizontalAlignment="Left"
+                                                      Content="{TemplateBinding SelectionBoxItem}"
+                                                      ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                                      ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                                      TextElement.Foreground="#F2F2F2"/>
+                                    <Path Data="M 0 0 L 5 5 L 10 0" Stroke="#A8A8A8" StrokeThickness="1.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                          HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,11,0"/>
+                                </Grid>
+                            </Border>
+                            <ToggleButton Background="Transparent" BorderThickness="0" Focusable="False" ClickMode="Press"
+                                          IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                                <ToggleButton.Template><ControlTemplate TargetType="ToggleButton"><Border Background="Transparent"/></ControlTemplate></ToggleButton.Template>
+                            </ToggleButton>
+                            <Popup x:Name="PART_Popup" Placement="Bottom" IsOpen="{TemplateBinding IsDropDownOpen}" AllowsTransparency="True" Focusable="False" PopupAnimation="Fade">
+                                <Border Background="#181818" BorderBrush="#414141" BorderThickness="1" CornerRadius="4" MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}" MaxHeight="320" Margin="0,3,0,0">
+                                    <ScrollViewer Margin="2" SnapsToDevicePixels="True">
+                                        <ItemsPresenter/>
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsKeyboardFocusWithin" Value="True"><Setter TargetName="ComboBorder" Property="BorderBrush" Value="#716421"/></Trigger>
+                            <Trigger Property="IsEnabled" Value="False"><Setter TargetName="ComboBorder" Property="Opacity" Value="0.5"/></Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="TopologyFilterCheckBox" TargetType="CheckBox" BasedOn="{StaticResource ModernCheckBox}">
+            <Setter Property="FontSize" Value="10.5"/>
+            <Setter Property="Foreground" Value="#BDBDBD"/>
+            <Setter Property="Margin" Value="0,0,12,0"/>
+        </Style>
+
+        <Style x:Key="PipelineStageBox" TargetType="Border">
+            <Setter Property="Height" Value="27"/>
+            <Setter Property="Background" Value="#202020"/>
+            <Setter Property="BorderBrush" Value="#303030"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="3"/>
+            <Setter Property="Padding" Value="5,0"/>
+        </Style>
+        <Style x:Key="PipelineStageText" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#848484"/>
+            <Setter Property="FontSize" Value="8.5"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style TargetType="ToolTip">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Placement" Value="Mouse"/>
+            <Setter Property="HasDropShadow" Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToolTip">
+                        <Border Background="#101010" BorderBrush="#4A4A4A" BorderThickness="1" CornerRadius="6" Padding="11" MaxWidth="360">
+                            <ContentPresenter/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="ProgressBar" x:Key="ModernProgress">
+            <Setter Property="Height" Value="7"/>
+            <Setter Property="Foreground" Value="{StaticResource Accent}"/>
+            <Setter Property="Background" Value="#2A2A2A"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ProgressBar">
+                        <Grid x:Name="PART_Track" ClipToBounds="True">
+                            <Border Background="{TemplateBinding Background}" CornerRadius="3"/>
+                            <Border x:Name="PART_Indicator"
+                                    Background="{TemplateBinding Foreground}"
+                                    CornerRadius="3"
+                                    HorizontalAlignment="Left"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="DataGrid">
+            <Setter Property="Background" Value="#171717"/>
+            <Setter Property="Foreground" Value="{StaticResource Text}"/>
+            <Setter Property="BorderBrush" Value="#383838"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+            <Setter Property="HorizontalGridLinesBrush" Value="#2C2C2C"/>
+            <Setter Property="VerticalGridLinesBrush" Value="#2C2C2C"/>
+            <Setter Property="RowBackground" Value="#171717"/>
+            <Setter Property="AlternatingRowBackground" Value="#191919"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="CanUserAddRows" Value="False"/>
+            <Setter Property="CanUserDeleteRows" Value="False"/>
+            <Setter Property="IsReadOnly" Value="True"/>
+            <Setter Property="SelectionMode" Value="Extended"/>
+            <Setter Property="SelectionUnit" Value="FullRow"/>
+            <Setter Property="AutoGenerateColumns" Value="False"/>
+        </Style>
+
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Background" Value="#222222"/>
+            <Setter Property="Foreground" Value="{StaticResource Text}"/>
+            <Setter Property="BorderBrush" Value="#3B3B3B"/>
+            <Setter Property="BorderThickness" Value="0,0,1,1"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+
+        <Style TargetType="DataGridCell" BasedOn="{StaticResource NetLoomDataGridCellBase}">
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="{StaticResource Text}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="10,6"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        </Style>
+
+        <Style TargetType="DataGridRow">
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="{StaticResource Text}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#3A3520"/>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#242424"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Border Background="{StaticResource Bg}" BorderBrush="#0A0A0A" BorderThickness="1" SnapsToDevicePixels="True">
+        <Grid Background="{StaticResource Bg}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="44"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="28"/>
+            </Grid.RowDefinitions>
+
+            <!-- Custom Windows title bar -->
+            <Grid Grid.Row="0" Background="#050505" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="46"/>
+                    <ColumnDefinition Width="46"/>
+                    <ColumnDefinition Width="46"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="14,0,0,0">
+                    <Image Source="Assets/AppIcon.png" Width="18" Height="18" SnapsToDevicePixels="True"/>
+                    <TextBlock Text="NetLoom" Foreground="White" FontSize="12" FontWeight="SemiBold"
+                               VerticalAlignment="Center" Margin="8,0,0,0"/>
+                </StackPanel>
+
+                <Button Grid.Column="1" Click="Minimize_Click" Style="{StaticResource WindowControlButton}">
+                    <Viewbox Width="11" Height="11"><Canvas Width="11" Height="11"><Line X1="1.5" Y1="7.5" X2="9.5" Y2="7.5" Stroke="#D8D8D8" StrokeThickness="1.1"/></Canvas></Viewbox>
+                </Button>
+                <Button Grid.Column="2" Click="Maximize_Click" Style="{StaticResource WindowMaximizeButton}"/>
+                <Button Grid.Column="3" Click="Close_Click" Style="{StaticResource WindowCloseButton}">
+                    <Viewbox Width="11" Height="11"><Canvas Width="11" Height="11"><Line X1="1.5" Y1="1.5" X2="9.5" Y2="9.5" Stroke="#E8E8E8" StrokeThickness="1.1"/><Line X1="9.5" Y1="1.5" X2="1.5" Y2="9.5" Stroke="#E8E8E8" StrokeThickness="1.1"/></Canvas></Viewbox>
+                </Button>
+            </Grid>
+
+            <!-- Header -->
+            <Border Grid.Row="1" Background="#1A1A1A" BorderBrush="#303030" BorderThickness="0,0,0,1">
+                <Grid Margin="14,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="NetLoom" Foreground="White" FontSize="14" FontWeight="Bold"/>
+                        <TextBlock Text=" / Network Audit Scanner" Foreground="#9F9F9F" FontSize="12" Margin="8,1,0,0"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Border BorderBrush="#3A3A3A" BorderThickness="1" CornerRadius="4" Padding="12,6" Margin="0,0,7,0">
+                            <TextBlock Text="AUDIT" Foreground="#FAD83B" FontSize="11" FontWeight="SemiBold"/>
+                        </Border>
+                        <Button Content="⚙  설정" Style="{StaticResource ToolbarButton}" Padding="10,5" Click="Settings_Click"/>
+                        <Button Content="ⓘ  정보" Style="{StaticResource ToolbarButton}" Padding="10,5" Margin="0" Click="Info_Click"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Body -->
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="310"/>
+                    <ColumnDefinition Width="1"/>
+                    <ColumnDefinition Width="*" MinWidth="620"/>
+                    <ColumnDefinition Width="1"/>
+                    <ColumnDefinition Width="350"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Left scan options -->
+                <Border Grid.Column="0" Background="#171717">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="16,14,16,18">
+                            <TextBlock Text="네트워크" Foreground="White" FontWeight="SemiBold" FontSize="14" Margin="0,0,0,10"/>
+
+                            <TextBlock Text="어댑터" Foreground="{StaticResource Muted}" FontSize="12" Margin="0,0,0,6"/>
+                            <ComboBox x:Name="AdapterCombo"
+                                      SelectionChanged="AdapterCombo_SelectionChanged"
+                                      Style="{StaticResource DarkComboBox}"
+                                      Margin="0,0,0,8">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Display}" Foreground="#F2F2F2" TextTrimming="CharacterEllipsis"/>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+
+                            <Button Content="↻  어댑터 새로고침"
+                                    Style="{StaticResource ToolbarButton}"
+                                    Click="RefreshAdapters_Click"
+                                    Margin="0,0,0,7"/>
+                            <Button x:Name="WifiAuditButton"
+                                    Content="Wi-Fi 보안 점검"
+                                    Style="{StaticResource ToolbarButton}"
+                                    Click="WifiAudit_Click"
+                                    IsEnabled="False"
+                                    Margin="0,0,0,5"/>
+                            <TextBlock x:Name="WifiAuditHintText"
+                                       Text="Wi-Fi 어댑터를 선택하면 무선 보안 점검을 사용할 수 있습니다."
+                                       Foreground="#707070" FontSize="10.5" TextWrapping="Wrap" Margin="1,0,0,14"/>
+
+                            <Border Height="1" Background="#303030" Margin="0,0,0,16"/>
+
+                            <TextBlock Text="스캔 범위" Foreground="White" FontWeight="SemiBold" FontSize="14" Margin="0,0,0,10"/>
+                            <Grid Margin="0,0,0,6">
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                <TextBlock Text="대상 범위" Foreground="{StaticResource Muted}" FontSize="12" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="1" Text="CIDR · 단일 IP · 시작-끝 · 다중" Foreground="#666666" FontSize="10" VerticalAlignment="Center"/>
+                            </Grid>
+                            <TextBox x:Name="CidrTextBox" Text="192.168.0.0/24" Margin="0,0,0,7"/>
+                            <WrapPanel Margin="0,0,0,7">
+                                <Button Content="현재 대역" Style="{StaticResource ToolbarButton}" Padding="9,6" Click="UseAdapterSubnet_Click"/>
+                                <Button Content="/24 빠른" Style="{StaticResource ToolbarButton}" Padding="9,6" Click="UseSlash24_Click"/>
+                                <Button Content="범위 선택…" Style="{StaticResource ToolbarButton}" Padding="9,6" Click="RangePicker_Click" Margin="0"/>
+                            </WrapPanel>
+                            <Button x:Name="RecommendedScopeButton" Content="◎  감사 대역 추천" Style="{StaticResource ToolbarButton}"
+                                    Click="RecommendedScopes_Click" Margin="0,0,0,5"/>
+                            <TextBlock x:Name="RecommendedScopeText" Text="라우팅 기반 추천 대역을 확인 중입니다." Foreground="#707070" FontSize="10.5" TextWrapping="Wrap" Margin="1,0,0,12"/>
+
+                            <Grid Margin="0,0,0,6">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="TCP 포트" Foreground="{StaticResource Muted}" FontSize="12" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="SelectedPortCountText" Grid.Column="1" Text="8개" Foreground="#777777" FontSize="11" VerticalAlignment="Center"/>
+                            </Grid>
+                            <TextBox x:Name="PortsTextBox"
+                                     Text="22,53,80,135,139,443,445,3389"
+                                     TextChanged="PortsTextBox_TextChanged"
+                                     Margin="0,0,0,7"/>
+                            <Button Content="☷  포트 목록에서 다중 선택"
+                                    Style="{StaticResource ToolbarButton}"
+                                    Click="PortPicker_Click"
+                                    Margin="0,0,0,12"/>
+
+                            <TextBlock Text="타임아웃 (ms)" Foreground="{StaticResource Muted}" FontSize="12" Margin="0,0,0,6"/>
+                            <TextBox x:Name="TimeoutTextBox" Text="600" Margin="0,0,0,12"/>
+
+                            <TextBlock Text="동시 작업 수" Foreground="{StaticResource Muted}" FontSize="12" Margin="0,0,0,6"/>
+                            <TextBox x:Name="ConcurrencyTextBox" Text="64" Margin="0,0,0,16"/>
+
+                            <Border Background="#211F13" BorderBrush="#4D4520" BorderThickness="1" CornerRadius="5" Padding="10">
+                                <StackPanel>
+                                    <TextBlock Text="감사 스캔" Foreground="{StaticResource Accent}" FontWeight="SemiBold" FontSize="12"/>
+                                    <TextBlock Text="ICMP 응답이 없어도 선택 TCP 포트는 검사합니다. SMB 감사가 켜져 있으면 445/139도 자동 확인하며 Guest 무자격 접근 여부를 별도로 기록합니다."
+                                               Foreground="#CFC28A" FontSize="11" TextWrapping="Wrap" Margin="0,5,0,0"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+
+                <Border Grid.Column="1" Background="#303030"/>
+
+                <!-- Main content -->
+                <Grid Grid.Column="2" Margin="14,12,14,10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Toolbar -->
+                    <WrapPanel Grid.Row="0" Margin="0,0,0,10">
+                        <Button x:Name="StartButton" Content="▶  스캔 시작"
+                                Style="{StaticResource TopAccentButton}"
+                                Click="StartScan_Click"/>
+                        <Button x:Name="StopButton" Content="■  중지"
+                                Style="{StaticResource TopToolbarButton}"
+                                Click="StopScan_Click"
+                                IsEnabled="False"/>
+                        <Button Content="↻  다시 스캔"
+                                Style="{StaticResource TopToolbarButton}"
+                                Click="StartScan_Click"/>
+                        <Button Content="⌫  결과 지우기"
+                                Style="{StaticResource TopToolbarButton}"
+                                Click="ClearResults_Click"/>
+                        <Button Content="⇩  CSV"
+                                Style="{StaticResource TopToolbarButton}"
+                                Click="ExportCsv_Click"/>
+                        <Button Content="⇩  JSON"
+                                Style="{StaticResource TopToolbarButton}"
+                                Click="ExportJson_Click"/>
+                        <Button Content="▤  감사 보고서"
+                                Style="{StaticResource TopAccentButton}"
+                                Click="AuditReport_Click"/>
+                        <Button x:Name="PacketCaptureButton" Content="◉  실시간 통신"
+                                Style="{StaticResource TopToolbarButton}"
+                                ToolTip="선택 어댑터에서 수동적으로 IPv4 트래픽을 관찰해 노드 활동을 표시합니다."
+                                Click="PacketCapture_Click"/>
+                        <Button x:Name="PacketInspectorButton" Content="▦  패킷 트레이서"
+                                Style="{StaticResource TopToolbarButton}"
+                                ToolTip="패킷 단위 Source/Destination/서비스와 DNS, HTTP, TLS SNI 등 보이는 정보를 실시간으로 확인하고 주요 키워드를 감시합니다."
+                                Click="PacketInspector_Click"/>
+                        <Button Content="◇  센서 가이드"
+                                Style="{StaticResource TopToolbarButton}"
+                                ToolTip="LOCAL HOST와 SPAN/Port Mirroring/TAP의 관측 범위 차이와 연결 방법을 안내합니다."
+                                Click="SensorGuide_Click"/>
+                        <Button x:Name="TrafficAuditButton" Content="●  기록 시작"
+                                Style="{StaticResource TopToolbarButton}"
+                                ToolTip="시작~종료 구간의 출발지/목적지 IP, 프로토콜, 포트, 패킷/바이트를 감사 기록으로 누적합니다. 패킷 본문은 저장하지 않습니다."
+                                Click="TrafficAudit_Click"/>
+                        <Button x:Name="TrafficAuditViewButton" Content="▤  통신 기록"
+                                Style="{StaticResource TopToolbarButton}"
+                                ToolTip="현재 또는 마지막 통신 감사 세션을 열고 CSV로 내보냅니다."
+                                Click="TrafficAuditView_Click"/>
+                        <Border Background="#171717" BorderBrush="#343434" BorderThickness="1" CornerRadius="4"
+                                Padding="9,6" Margin="0,0,7,7" VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <Ellipse x:Name="TrafficStatusDot" Width="7" Height="7" Fill="#5B5B5B" Margin="0,0,6,0"/>
+                                <TextBlock x:Name="TrafficStatusText" Text="TRAFFIC OFF" Foreground="#8E8E8E" FontSize="10.5" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Background="#171717" BorderBrush="#343434" BorderThickness="1" CornerRadius="4"
+                                Padding="9,6" Margin="0,0,7,7" VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <Ellipse x:Name="TrafficAuditStatusDot" Width="7" Height="7" Fill="#5B5B5B" Margin="0,0,6,0"/>
+                                <TextBlock x:Name="TrafficAuditStatusText" Text="AUDIT OFF" Foreground="#8E8E8E" FontSize="10.5" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Background="#171717" BorderBrush="#343434" BorderThickness="1" CornerRadius="4"
+                                Padding="9,6" Margin="0,0,0,7" VerticalAlignment="Center">
+                            <TextBlock x:Name="CaptureCoverageStatusText" Text="LOCAL HOST · 외부 관계 제한" Foreground="#A7A7A7" FontSize="10.5" VerticalAlignment="Center"/>
+                        </Border>
+                    </WrapPanel>
+
+                    <!-- Live progress visualization -->
+                    <Border Grid.Row="1" Background="#181A18" BorderBrush="#343834" BorderThickness="1" CornerRadius="5" Padding="11,9" Margin="0,0,0,9">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="9"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Ellipse x:Name="ScanPulse" Width="8" Height="8" Fill="#FAD83B" Opacity="0.28" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                <TextBlock x:Name="StatusText" Grid.Column="1"
+                                           Text="대기 중 · 스캔 범위와 포트를 확인하세요."
+                                           Foreground="#DADADA" FontSize="12" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="ProgressText" Grid.Column="2"
+                                           Text="0 / 0"
+                                           Foreground="#BEBEBE" FontSize="12" FontWeight="SemiBold"/>
+                            </Grid>
+                            <ProgressBar x:Name="ScanProgressBar" Grid.Row="2" Style="{StaticResource ModernProgress}" Minimum="0" Maximum="100" Value="0"/>
+                            <Grid Grid.Row="3" Margin="0,7,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock x:Name="ScanDetailText" Text="READY · ICMP + TCP Connect" Foreground="#797979" FontSize="10.5"/>
+                                <TextBlock x:Name="ScanPercentText" Grid.Column="1" Text="0%" Foreground="#FAD83B" FontSize="10.5" FontWeight="SemiBold"/>
+                            </Grid>
+                        </Grid>
+                    </Border>
+
+                    <!-- View selector -->
+                    <Grid Grid.Row="2" Margin="0,0,0,9">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Orientation="Horizontal">
+                            <Button x:Name="ListModeButton" Content="☷  리스트" Style="{StaticResource ToolbarButton}" Click="ListMode_Click"/>
+                            <Button x:Name="MatrixModeButton" Content="▦  매트릭스" Style="{StaticResource ToolbarButton}" Click="MatrixMode_Click"/>
+                            <Button x:Name="TopologyModeButton" Content="⌘  관계도" Style="{StaticResource ToolbarButton}" Click="TopologyMode_Click" Margin="0"/>
+                        </StackPanel>
+                        <TextBlock Grid.Column="1" Text="리스트 · 대역 그룹 매트릭스 · 추정 논리 관계도"
+                                   Foreground="#707070" FontSize="11" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                    </Grid>
+
+                    <!-- Views -->
+                    <Grid Grid.Row="3">
+                        <!-- List -->
+                        <Border x:Name="ListPanel" Background="#171717" BorderBrush="#353535" BorderThickness="1" CornerRadius="4">
+                            <DataGrid x:Name="ResultsGrid"
+                                      ItemsSource="{Binding ResultsView}"
+                                      AlternationCount="2"
+                                      RowHeight="38"
+                                      MinColumnWidth="70"
+                                      FrozenColumnCount="3"
+                                      CanUserResizeColumns="True"
+                                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                      ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                      PreviewMouseLeftButtonUp="ResultsGrid_PreviewMouseLeftButtonUp">
+                                <DataGrid.GroupStyle>
+                                    <GroupStyle>
+                                        <GroupStyle.ContainerStyle>
+                                            <Style TargetType="GroupItem">
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="GroupItem">
+                                                            <StackPanel>
+                                                                <Border Background="#202018" BorderBrush="#464020" BorderThickness="0,0,0,1" Padding="10,6">
+                                                                    <StackPanel Orientation="Horizontal">
+                                                                        <Border Background="#302B17" BorderBrush="#625621" BorderThickness="1" CornerRadius="4" Padding="7,3">
+                                                                            <TextBlock Text="{Binding Name}" Foreground="#FAD83B" FontSize="10.5" FontWeight="SemiBold"/>
+                                                                        </Border>
+                                                                        <TextBlock Text="{Binding ItemCount, StringFormat='  {0}개 결과'}" Foreground="#777" FontSize="10" VerticalAlignment="Center" Margin="7,0,0,0"/>
+                                                                    </StackPanel>
+                                                                </Border>
+                                                                <ItemsPresenter/>
+                                                            </StackPanel>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </GroupStyle.ContainerStyle>
+                                    </GroupStyle>
+                                </DataGrid.GroupStyle>
+                                <DataGrid.RowStyle>
+                                    <Style TargetType="DataGridRow" BasedOn="{StaticResource {x:Type DataGridRow}}">
+                                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                        <Setter Property="Cursor" Value="Hand"/>
+                                        <Setter Property="ToolTipService.InitialShowDelay" Value="220"/>
+                                        <Setter Property="ToolTipService.ShowDuration" Value="12000"/>
+                                        <Setter Property="ToolTip" Value="{Binding ToolTipText}"/>
+                                    </Style>
+                                </DataGrid.RowStyle>
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="상태" Binding="{Binding Status}" Width="78" ElementStyle="{StaticResource DataGridCellText}"/>
+                                    <DataGridTemplateColumn Header="장치" Width="126">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <controls:DeviceGlyphControl DeviceType="{Binding DeviceType}" Width="21" Height="21" Foreground="#FAD83B" Margin="0,0,8,0"/>
+                                                    <TextBlock Text="{Binding DeviceLabel}" Foreground="#E8E8E8" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="IP 주소" Binding="{Binding IpAddress}" Width="138" ElementStyle="{StaticResource DataGridCellText}"/>
+                                    <DataGridTextColumn Header="호스트명" Binding="{Binding HostName}" Width="210" ElementStyle="{StaticResource DataGridCellText}"/>
+                                    <DataGridTextColumn Header="MAC 주소" Binding="{Binding MacAddress}" Width="165" ElementStyle="{StaticResource DataGridCellText}"/>
+                                    <DataGridTextColumn Header="응답" Binding="{Binding RoundTripDisplay}" Width="82" ElementStyle="{StaticResource DataGridCellText}"/>
+                                    <DataGridTextColumn Header="열린 포트" Binding="{Binding OpenPorts}" Width="190" ElementStyle="{StaticResource DataGridCellText}"/>
+                                    <DataGridTextColumn Header="프로토콜 식별" Binding="{Binding ProtocolIdentitySummary}" Width="240" ElementStyle="{StaticResource DataGridCellText}"/>
+                                    <DataGridTextColumn Header="공유 감사" Binding="{Binding ShareAuditSummary}" Width="165" ElementStyle="{StaticResource DataGridCellText}"/>
+                                    <DataGridTemplateColumn Header="게스트 공유" Width="185">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding GuestShareNames}" VerticalAlignment="Center">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Foreground" Value="#888888"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding HasGuestShareExposure}" Value="True">
+                                                                    <Setter Property="Foreground" Value="#FF7676"/>
+                                                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Border>
+
+                        <!-- Matrix -->
+                        <Border x:Name="MatrixPanel" Visibility="Collapsed" Background="#171717" BorderBrush="#353535" BorderThickness="1" CornerRadius="4">
+                            <Grid Margin="10">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Grid Margin="2,0,2,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel>
+                                        <TextBlock x:Name="MatrixTitleText" Text="감사 대역 매트릭스" Foreground="White" FontSize="13" FontWeight="SemiBold"/>
+                                        <TextBlock x:Name="MatrixHintText" Text="대역별 그룹 안에서 IP 끝자리와 장치 상태를 표시합니다." Foreground="#777777" FontSize="10.5" Margin="0,3,0,0"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <Ellipse Width="7" Height="7" Fill="#666666" Margin="0,0,4,0"/><TextBlock Text="대기" Foreground="#888" FontSize="10" Margin="0,0,10,0"/>
+                                        <Ellipse Width="7" Height="7" Fill="#FAD83B" Margin="0,0,4,0"/><TextBlock Text="스캔" Foreground="#AAA" FontSize="10" Margin="0,0,10,0"/>
+                                        <Ellipse Width="7" Height="7" Fill="#62D9A6" Margin="0,0,4,0"/><TextBlock Text="ON" Foreground="#AAA" FontSize="10" Margin="0,0,10,0"/>
+                                        <Ellipse Width="7" Height="7" Fill="#333333" Margin="0,0,4,0"/><TextBlock Text="OFF" Foreground="#777" FontSize="10" Margin="0,0,10,0"/>
+                                        <Ellipse Width="7" Height="7" Fill="#FF7676" Margin="0,0,4,0"/><TextBlock Text="GUEST" Foreground="#B88" FontSize="10"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                    <ItemsControl ItemsSource="{Binding MatrixGroups}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Background="#141414" BorderBrush="#303030" BorderThickness="1" CornerRadius="7" Margin="1,0,1,10" Padding="9">
+                                                    <StackPanel>
+                                                        <Grid Margin="1,0,1,8">
+                                                            <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                                            <Border Background="#2A2616" BorderBrush="#5A5020" BorderThickness="1" CornerRadius="4" Padding="7,3" Margin="0,0,8,0">
+                                                                <TextBlock Text="{Binding GroupLabel}" Foreground="#FAD83B" FontSize="10" FontWeight="SemiBold"/>
+                                                            </Border>
+                                                            <TextBlock Grid.Column="1" Text="{Binding Expression}" Foreground="#D6D6D6" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                                            <TextBlock Grid.Column="2" Text="{Binding CountText}" Foreground="#727272" FontSize="10" VerticalAlignment="Center"/>
+                                                        </Grid>
+                                                        <ItemsControl ItemsSource="{Binding Nodes}">
+                                                            <ItemsControl.ItemsPanel>
+                                                                <ItemsPanelTemplate><UniformGrid Columns="16"/></ItemsPanelTemplate>
+                                                            </ItemsControl.ItemsPanel>
+                                                            <ItemsControl.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <Border Margin="3" MinHeight="55" CornerRadius="5" Cursor="Hand" MouseLeftButtonUp="MatrixNode_Click" ToolTipService.InitialShowDelay="180" ToolTipService.ShowDuration="12000">
+                                                                        <Border.ToolTip>
+                                                                            <ToolTip>
+                                                                                <StackPanel MinWidth="230">
+                                                                                    <Grid Margin="0,0,0,7">
+                                                                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                                                                        <TextBlock Text="{Binding IpAddress}" Foreground="White" FontWeight="SemiBold" FontSize="12"/>
+                                                                                        <TextBlock Grid.Column="1" Text="{Binding StateText}" Foreground="#FAD83B" FontSize="10"/>
+                                                                                    </Grid>
+                                                                                    <TextBlock Text="{Binding DeviceLabel, StringFormat='장치  {0}'}" Foreground="#CFCFCF" FontSize="10.5"/>
+                                                                                    <TextBlock Text="{Binding HostName, StringFormat='호스트  {0}'}" Foreground="#999" FontSize="10.5" Margin="0,3,0,0"/>
+                                                                                    <TextBlock Text="{Binding OpenPorts, StringFormat='포트  {0}'}" Foreground="#999" FontSize="10.5" Margin="0,3,0,0" TextWrapping="Wrap"/>
+                                                                                    <TextBlock Text="{Binding ShareAuditSummary, StringFormat='공유 감사  {0}'}" Foreground="#999" FontSize="10.5" Margin="0,3,0,0"/>
+                                                                                    <TextBlock Text="클릭하면 장비 상세를 엽니다." Foreground="#FAD83B" FontSize="9.5" Margin="0,7,0,0"/>
+                                                                                </StackPanel>
+                                                                            </ToolTip>
+                                                                        </Border.ToolTip>
+                                                                        <Border.Style>
+                                                                            <Style TargetType="Border">
+                                                                                <Setter Property="Background" Value="#151515"/>
+                                                                                <Setter Property="BorderBrush" Value="#292929"/>
+                                                                                <Setter Property="BorderThickness" Value="1"/>
+                                                                                <Style.Triggers>
+                                                                                    <Trigger Property="IsMouseOver" Value="True"><Setter Property="BorderBrush" Value="#776A29"/><Setter Property="Background" Value="#1F1E19"/></Trigger>
+                                                                                    <DataTrigger Binding="{Binding StateText}" Value="스캔 중"><Setter Property="Background" Value="#242116"/><Setter Property="BorderBrush" Value="#7A6821"/></DataTrigger>
+                                                                                    <DataTrigger Binding="{Binding StateText}" Value="ONLINE"><Setter Property="Background" Value="#19231F"/><Setter Property="BorderBrush" Value="#355F4E"/></DataTrigger>
+                                                                                    <DataTrigger Binding="{Binding StateText}" Value="OFFLINE"><Setter Property="Background" Value="#151515"/><Setter Property="BorderBrush" Value="#252525"/><Setter Property="Opacity" Value="0.62"/></DataTrigger>
+                                                                                    <DataTrigger Binding="{Binding HasGuestShareExposure}" Value="True"><Setter Property="Background" Value="#2A1717"/><Setter Property="BorderBrush" Value="#B94A4A"/><Setter Property="BorderThickness" Value="1.5"/><Setter Property="Opacity" Value="1"/></DataTrigger>
+                                                                                </Style.Triggers>
+                                                                            </Style>
+                                                                        </Border.Style>
+                                                                        <Grid Margin="5">
+                                                                            <TextBlock Text="{Binding AddressLabel}" Foreground="#8D8D8D" FontSize="9.5" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                                                            <Ellipse Width="6" Height="6" HorizontalAlignment="Right" VerticalAlignment="Top">
+                                                                                <Ellipse.Style>
+                                                                                    <Style TargetType="Ellipse">
+                                                                                        <Setter Property="Fill" Value="#555555"/>
+                                                                                        <Style.Triggers>
+                                                                                            <DataTrigger Binding="{Binding StateText}" Value="스캔 중"><Setter Property="Fill" Value="#FAD83B"/></DataTrigger>
+                                                                                            <DataTrigger Binding="{Binding StateText}" Value="ONLINE"><Setter Property="Fill" Value="#62D9A6"/></DataTrigger>
+                                                                                            <DataTrigger Binding="{Binding StateText}" Value="OFFLINE"><Setter Property="Fill" Value="#333333"/></DataTrigger>
+                                                                                        </Style.Triggers>
+                                                                                    </Style>
+                                                                                </Ellipse.Style>
+                                                                            </Ellipse>
+                                                                            <controls:DeviceGlyphControl DeviceType="{Binding DeviceType}" Width="23" Height="23" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                                                <controls:DeviceGlyphControl.Style>
+                                                                                    <Style TargetType="controls:DeviceGlyphControl">
+                                                                                        <Setter Property="Foreground" Value="#606060"/>
+                                                                                        <Style.Triggers>
+                                                                                            <DataTrigger Binding="{Binding StateText}" Value="스캔 중"><Setter Property="Foreground" Value="#FAD83B"/></DataTrigger>
+                                                                                            <DataTrigger Binding="{Binding StateText}" Value="ONLINE"><Setter Property="Foreground" Value="#FAD83B"/></DataTrigger>
+                                                                                            <DataTrigger Binding="{Binding StateText}" Value="OFFLINE"><Setter Property="Foreground" Value="#444444"/></DataTrigger>
+                                                                                        </Style.Triggers>
+                                                                                    </Style>
+                                                                                </controls:DeviceGlyphControl.Style>
+                                                                            </controls:DeviceGlyphControl>
+                                                                        </Grid>
+                                                                    </Border>
+                                                                </DataTemplate>
+                                                            </ItemsControl.ItemTemplate>
+                                                        </ItemsControl>
+                                                    </StackPanel>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </ScrollViewer>
+                            </Grid>
+                        </Border>
+
+                        <!-- Topology -->
+                        <Grid x:Name="TopologyPanel" Visibility="Collapsed">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid Margin="0,0,0,7">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="관계도는 감사 대역과 강하게 식별된 인프라 장비를 중심으로 배치합니다."
+                                               Foreground="#A0A0A0" FontSize="10.5"/>
+                                    <TextBlock Text="서버/NAS/가상화/프린터는 별도 특수 자산 브랜치로 분리하고, 하위망 발견과 실시간 통신 활동은 노드에 추가 표시합니다."
+                                               Foreground="#707070" FontSize="9.5" Margin="0,2,0,0"/>
+                                </StackPanel>
+                                <WrapPanel Grid.Column="1" HorizontalAlignment="Right">
+                                    <Button Content="−" Style="{StaticResource ToolbarButton}" Padding="10,6" Click="TopologyZoomOut_Click"/>
+                                    <Border Background="#1C1C1C" BorderBrush="#353535" BorderThickness="1" CornerRadius="4" Padding="9,6" Margin="0,0,7,0">
+                                        <TextBlock x:Name="TopologyZoomText" Text="80%" Foreground="#D9D9D9" FontSize="11" MinWidth="38" TextAlignment="Center"/>
+                                    </Border>
+                                    <Button Content="+" Style="{StaticResource ToolbarButton}" Padding="10,6" Click="TopologyZoomIn_Click"/>
+                                    <Button Content="100%" Style="{StaticResource ToolbarButton}" Padding="9,6" Click="TopologyZoomReset_Click"/>
+                                    <Button Content="전체 맞춤" Style="{StaticResource ToolbarButton}" Padding="9,6" Click="TopologyFit_Click"/>
+                                    <Button x:Name="TopologyPerspectiveButton" Content="3D 보기" Style="{StaticResource ToolbarButton}" Padding="9,6" Click="TopologyPerspective_Click"/>
+                                    <Button Content="PNG 저장" Style="{StaticResource ToolbarButton}" Click="ExportTopologyPng_Click"/>
+                                    <Button Content="인쇄" Style="{StaticResource ToolbarButton}" Click="PrintTopology_Click" Margin="0"/>
+                                </WrapPanel>
+                            </Grid>
+                            <Border Grid.Row="1" Background="#151515" BorderBrush="#303030" BorderThickness="1" CornerRadius="5" Padding="10,7" Margin="0,0,0,7">
+                                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" CanContentScroll="False" PanningMode="HorizontalOnly">
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <TextBlock Text="분류 강조" Foreground="#858585" FontSize="10.5" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                                        <CheckBox x:Name="TopologyFilterInfra" Content="인프라" Style="{StaticResource TopologyFilterCheckBox}" Checked="TopologyFilter_Changed" Unchecked="TopologyFilter_Changed"/>
+                                        <CheckBox x:Name="TopologyFilterSpecial" Content="서버/NAS" Style="{StaticResource TopologyFilterCheckBox}" Checked="TopologyFilter_Changed" Unchecked="TopologyFilter_Changed"/>
+                                        <CheckBox x:Name="TopologyFilterPeripheral" Content="프린터/전화/카메라" Style="{StaticResource TopologyFilterCheckBox}" Checked="TopologyFilter_Changed" Unchecked="TopologyFilter_Changed"/>
+                                        <CheckBox x:Name="TopologyFilterEndpoint" Content="PC/모바일/IoT" Style="{StaticResource TopologyFilterCheckBox}" Checked="TopologyFilter_Changed" Unchecked="TopologyFilter_Changed"/>
+                                        <CheckBox x:Name="TopologyFilterOther" Content="기타" Style="{StaticResource TopologyFilterCheckBox}" Checked="TopologyFilter_Changed" Unchecked="TopologyFilter_Changed"/>
+                                        <CheckBox x:Name="TopologyFilterExternal" Content="외부" Style="{StaticResource TopologyFilterCheckBox}" Checked="TopologyFilter_Changed" Unchecked="TopologyFilter_Changed"/>
+                                        <CheckBox x:Name="TopologyShowAllExternalCheck" Content="저중요 외부 포함" Style="{StaticResource TopologyFilterCheckBox}"
+                                                  ToolTip="기본값은 중요 Flow만 관계도에 표시합니다. 체크해도 패킷 수집/보안 분석 데이터는 변하지 않습니다."
+                                                  Checked="TopologyExternalDetail_Changed" Unchecked="TopologyExternalDetail_Changed"/>
+                                        <CheckBox x:Name="TopologyExcludeSensorHostConnectionsCheck" Content="실행 PC 연결 제외" Style="{StaticResource TopologyFilterCheckBox}"
+                                                  ToolTip="관계도에서만 NetLoom 실행 PC와 External/Public 사이의 관계도 노드/선을 숨깁니다. 패킷/보안 분석/감사 이력 원본은 유지됩니다."
+                                                  Checked="TopologySensorHostConnections_Changed" Unchecked="TopologySensorHostConnections_Changed"/>
+                                        <Border Width="1" Height="22" Background="#343434" Margin="2,0,10,0"/>
+                                        <Border Background="#151A18" BorderBrush="#30453B" BorderThickness="1" CornerRadius="4" Padding="8,4" Margin="0,0,7,0" VerticalAlignment="Center">
+                                            <TextBlock x:Name="TopologyCoverageText" Text="LOCAL · 외부 관계 제한" Foreground="#9A9A9A" FontSize="10.2" FontWeight="SemiBold"/>
+                                        </Border>
+                                        <Button Content="센서 가이드" Style="{StaticResource ToolbarButton}" Padding="8,4"
+                                                ToolTip="SPAN/Port Mirroring/TAP 구성과 Transit 검증 방법을 확인합니다."
+                                                Click="SensorGuide_Click"/>
+                                        <Border Background="#1C1A14" BorderBrush="#4A4020" BorderThickness="1" CornerRadius="4" Padding="8,4" Margin="0,0,7,0" VerticalAlignment="Center">
+                                            <TextBlock x:Name="TopologySecurityStatusText" Text="보안 분석 대기" Foreground="#8E8E8E" FontSize="10.5" FontWeight="SemiBold"/>
+                                        </Border>
+                                        <Button Content="보안 정책" Style="{StaticResource ToolbarButton}" Padding="8,4"
+                                                ToolTip="신뢰 내부 장비, 정상 외부 목적지/도메인/서비스, DNS 이상 임계값과 오프라인 CIDR 인텔리전스를 관리합니다."
+                                                Click="SecurityPolicy_Click"/>
+                                        <Button Content="보안 타임라인" Style="{StaticResource ToolbarButton}" Padding="8,4"
+                                                ToolTip="현재 세션의 관계도 위험 상태 변화를 시점별로 확인하고 2D/3D 관계도에 재생합니다."
+                                                Click="SecurityTimeline_Click"/>
+                                        <Button x:Name="TopologySecurityResetButton" Content="보안 분석 초기화" Style="{StaticResource ToolbarButton}" Padding="8,4" IsEnabled="False"
+                                                ToolTip="현재 실행 중 누적한 관계도 보안 분석 세션만 초기화합니다. 학습된 Baseline은 유지됩니다."
+                                                Click="SecurityAnalysisReset_Click"/>
+                                        <Button x:Name="TopologyBaselineResetButton" Content="Baseline 초기화" Style="{StaticResource ToolbarButton}" Padding="8,4"
+                                                ToolTip="장비별로 장기간 학습해 저장한 정상 행동 Baseline을 전체 삭제합니다. 현재 보안 분석 세션은 유지됩니다."
+                                                Click="SecurityBaselineReset_Click"/>
+                                        <Button x:Name="TopologyExternalHistoryClearButton" Content="외부 이력 지우기" Style="{StaticResource ToolbarButton}" Padding="8,4"
+                                                ToolTip="실시간/감사 중 관찰되어 유지 중인 External/Public 노드와 연결 이력을 지웁니다. 실제 스캔 대상 공인 IP는 유지됩니다."
+                                                Click="TopologyExternalHistoryClear_Click"/>
+                                        <Button Content="초기화" Style="{StaticResource ToolbarButton}" Padding="8,4" Margin="0" Click="TopologyFilterReset_Click"/>
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </Border>
+                            <ScrollViewer x:Name="TopologyScrollViewer" Grid.Row="2"
+                                          HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
+                                          CanContentScroll="False" PreviewMouseWheel="TopologyScrollViewer_PreviewMouseWheel">
+                                <controls:TopologyControl x:Name="TopologyVisual" MinHeight="420"/>
+                            </ScrollViewer>
+                        </Grid>
+                    </Grid>
+
+                    <!-- Summary -->
+                    <Grid Grid.Row="4" Margin="0,8,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name="SummaryText"
+                                   Text="결과 0개"
+                                   Foreground="#AFAFAF" FontSize="11"/>
+                        <TextBlock Grid.Column="1"
+                                   Text="ICMP + TCP Connect · DNS · ARP · SMB · IPP · SNMP · Device Heuristics"
+                                   Foreground="#6F6F6F" FontSize="11"/>
+                    </Grid>
+                </Grid>
+
+                <Border Grid.Column="3" Background="#303030"/>
+
+                <!-- Right ENGINE / Live Trace -->
+                <Border Grid.Column="4" Background="#141414">
+                    <Grid Margin="12,12,12,10">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Ellipse x:Name="EngineStatusDot" Width="7" Height="7" Fill="#5A5A5A" VerticalAlignment="Center" Margin="0,0,7,0"/>
+                                    <TextBlock Text="ENGINE" Foreground="White" FontSize="13" FontWeight="Bold"/>
+                                    <TextBlock Text=" / LIVE TRACE" Foreground="#777777" FontSize="10.5" Margin="5,2,0,0"/>
+                                </StackPanel>
+                                <TextBlock x:Name="EngineStateText" Text="대기 중 · C# scan engine" Foreground="#777777" FontSize="10.5" Margin="14,3,0,0"/>
+                            </StackPanel>
+                            <Button Grid.Column="1" Content="지우기" Style="{StaticResource ToolbarButton}" Padding="8,4" FontSize="10.5" Click="ClearEngineTrace_Click" Margin="0"/>
+                        </Grid>
+
+                        <Border Grid.Row="1" Background="#181818" BorderBrush="#2D2D2D" BorderThickness="1" CornerRadius="5" Padding="8" Margin="0,10,0,8">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,7">
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                    <TextBlock Text="PIPELINE" Foreground="#858585" FontSize="9.5" FontWeight="SemiBold"/>
+                                    <TextBlock Grid.Column="1" x:Name="EngineCurrentStageText" Text="IDLE" Foreground="#FAD83B" FontSize="9.5" FontWeight="SemiBold"/>
+                                </Grid>
+                                <StackPanel>
+                                    <UniformGrid Columns="4" Margin="0,0,0,4">
+                                        <Border x:Name="PipeDiscover" Style="{StaticResource PipelineStageBox}" Margin="0,0,4,0"><TextBlock Text="DISCOVER" Style="{StaticResource PipelineStageText}"/></Border>
+                                        <Border x:Name="PipePing" Style="{StaticResource PipelineStageBox}" Margin="0,0,4,0"><TextBlock Text="PING" Style="{StaticResource PipelineStageText}"/></Border>
+                                        <Border x:Name="PipePort" Style="{StaticResource PipelineStageBox}" Margin="0,0,4,0"><TextBlock Text="PORT" Style="{StaticResource PipelineStageText}"/></Border>
+                                        <Border x:Name="PipeIdentify" Style="{StaticResource PipelineStageBox}"><TextBlock Text="IDENTIFY" Style="{StaticResource PipelineStageText}"/></Border>
+                                    </UniformGrid>
+                                    <UniformGrid Columns="4">
+                                        <Border x:Name="PipeAudit" Style="{StaticResource PipelineStageBox}" Margin="0,0,4,0"><TextBlock Text="AUDIT" Style="{StaticResource PipelineStageText}"/></Border>
+                                        <Border x:Name="PipeMap" Style="{StaticResource PipelineStageBox}" Margin="0,0,4,0"><TextBlock Text="MAP" Style="{StaticResource PipelineStageText}"/></Border>
+                                        <Border x:Name="PipeReport" Style="{StaticResource PipelineStageBox}" Margin="0,0,4,0"><TextBlock Text="REPORT" Style="{StaticResource PipelineStageText}"/></Border>
+                                        <Border Style="{StaticResource PipelineStageBox}" Background="#181818" BorderBrush="#252525"><TextBlock Text="WooklyDev" Style="{StaticResource PipelineStageText}" Foreground="#4F4F4F"/></Border>
+                                    </UniformGrid>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <UniformGrid Grid.Row="2" Columns="4" Margin="0,0,0,8">
+                            <Border Background="#181818" BorderBrush="#292929" BorderThickness="1" CornerRadius="4" Margin="0,0,4,0" Padding="6">
+                                <StackPanel><TextBlock Text="WORKERS" Foreground="#666666" FontSize="8.5"/><TextBlock x:Name="EngineWorkersText" Text="0 / 0" Foreground="White" FontSize="12" FontWeight="SemiBold" Margin="0,3,0,0"/></StackPanel>
+                            </Border>
+                            <Border Background="#181818" BorderBrush="#292929" BorderThickness="1" CornerRadius="4" Margin="0,0,4,0" Padding="6">
+                                <StackPanel><TextBlock Text="QUEUE" Foreground="#666666" FontSize="8.5"/><TextBlock x:Name="EngineQueueText" Text="0" Foreground="White" FontSize="12" FontWeight="SemiBold" Margin="0,3,0,0"/></StackPanel>
+                            </Border>
+                            <Border Background="#181818" BorderBrush="#292929" BorderThickness="1" CornerRadius="4" Margin="0,0,4,0" Padding="6">
+                                <StackPanel><TextBlock Text="RATE" Foreground="#666666" FontSize="8.5"/><TextBlock x:Name="EngineRateText" Text="0.0/s" Foreground="White" FontSize="12" FontWeight="SemiBold" Margin="0,3,0,0"/></StackPanel>
+                            </Border>
+                            <Border Background="#181818" BorderBrush="#292929" BorderThickness="1" CornerRadius="4" Padding="6">
+                                <StackPanel><TextBlock Text="ONLINE" Foreground="#666666" FontSize="8.5"/><TextBlock x:Name="EngineOnlineText" Text="0" Foreground="#62D9A6" FontSize="12" FontWeight="SemiBold" Margin="0,3,0,0"/></StackPanel>
+                            </Border>
+                        </UniformGrid>
+
+                        <Grid Grid.Row="3" Margin="0,0,0,7">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button x:Name="EngineGeneralButton" Content="일반" Style="{StaticResource ToolbarButton}" Padding="9,5" FontSize="10.5" Click="EngineGeneral_Click"/>
+                                    <Button x:Name="EngineDetailedButton" Content="상세" Style="{StaticResource ToolbarButton}" Padding="9,5" FontSize="10.5" Click="EngineDetailed_Click"/>
+                                    <Button x:Name="EngineRawButton" Content="RAW" Style="{StaticResource ToolbarButton}" Padding="9,5" FontSize="10.5" Click="EngineRaw_Click" Margin="0"/>
+                                </StackPanel>
+                                <TextBlock Text="일반=핵심 · 상세=성공/식별 · RAW=모든 시도" Foreground="#5E5E5E" FontSize="8.8" Margin="1,5,0,0"/>
+                            </StackPanel>
+                            <TextBlock Grid.Column="1" x:Name="EngineEntryCountText" Text="0 lines" Foreground="#666666" FontSize="9.5" VerticalAlignment="Top" Margin="8,7,0,0"/>
+                        </Grid>
+
+                        <Border Grid.Row="4" Background="#101010" BorderBrush="#2A2A2A" BorderThickness="1" CornerRadius="4">
+                            <ListBox x:Name="EngineTraceList" ItemsSource="{Binding EngineTraceEntries}" Background="Transparent" BorderThickness="0"
+                                     Foreground="#DADADA" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                     ScrollViewer.VerticalScrollBarVisibility="Auto" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling">
+                                <ListBox.ItemContainerStyle>
+                                    <Style TargetType="ListBoxItem">
+                                        <Setter Property="Padding" Value="0"/><Setter Property="Margin" Value="0"/><Setter Property="Background" Value="Transparent"/>
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/><Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                                    </Style>
+                                </ListBox.ItemContainerStyle>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border BorderBrush="#1E1E1E" BorderThickness="0,0,0,1" Padding="7,6">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions><ColumnDefinition Width="58"/><ColumnDefinition Width="58"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding TimeText}" Foreground="#5F5F5F" FontFamily="Consolas" FontSize="9" VerticalAlignment="Top"/>
+                                                <Border Grid.Column="1" HorizontalAlignment="Left" CornerRadius="2" Padding="4,1" Margin="0,0,5,0" VerticalAlignment="Top">
+                                                    <Border.Style>
+                                                        <Style TargetType="Border">
+                                                            <Setter Property="Background" Value="#242424"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding Category}" Value="ONLINE"><Setter Property="Background" Value="#173328"/></DataTrigger>
+                                                                <DataTrigger Binding="{Binding Category}" Value="ALERT"><Setter Property="Background" Value="#4A2020"/></DataTrigger>
+                                                                <DataTrigger Binding="{Binding Category}" Value="TCP"><Setter Property="Background" Value="#342F18"/></DataTrigger>
+                                                                <DataTrigger Binding="{Binding Category}" Value="SMB"><Setter Property="Background" Value="#263044"/></DataTrigger>
+                                                                <DataTrigger Binding="{Binding Category}" Value="CLASSIFY"><Setter Property="Background" Value="#342B42"/></DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Border.Style>
+                                                    <TextBlock Text="{Binding Category}" Foreground="#D6D6D6" FontFamily="Consolas" FontSize="8.5" FontWeight="SemiBold"/>
+                                                </Border>
+                                                <StackPanel Grid.Column="2">
+                                                    <TextBlock Text="{Binding IpAddress}" Foreground="#FAD83B" FontFamily="Consolas" FontSize="9.5"/>
+                                                    <TextBlock Text="{Binding Message}" Foreground="#BDBDBD" FontFamily="Consolas" FontSize="9.5" TextWrapping="Wrap" Margin="0,2,0,0"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Border>
+
+                        <Grid Grid.Row="5" Margin="0,7,0,0">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                            <TextBlock Text="실제 C# 엔진 동작을 이벤트 단위로 표시" Foreground="#5F5F5F" FontSize="9.5"/>
+                            <CheckBox x:Name="EngineAutoScrollCheckBox" Grid.Column="1" Content="자동 스크롤" IsChecked="True" Foreground="#777777" FontSize="9.5" VerticalAlignment="Center"/>
+                        </Grid>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <!-- Footer -->
+            <Border Grid.Row="3" Background="#0B0B0B" BorderBrush="#303030" BorderThickness="0,1,0,0">
+                <Grid Margin="10,0">
+                    <TextBlock x:Name="FooterStatus"
+                               Text="준비됨"
+                               Foreground="#B0B0B0" FontSize="11"
+                               VerticalAlignment="Center"/>
+                    <TextBlock Text="© 2026 WooklyDev"
+                               Foreground="#8D8D8D" FontSize="11"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Right"/>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</Window>

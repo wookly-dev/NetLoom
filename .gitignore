@@ -1,0 +1,17 @@
+**/bin/
+**/obj/
+.vs/
+.dotnet/
+publish/
+publish-release/
+artifacts/
+dist/
+*.user
+*.suo
+*.log
+**/__pycache__/
+**/settings.json
+**/packet-inspector.json
+**/security-baseline.json
+**/security-policy.json
+**/external-intelligence.csv
